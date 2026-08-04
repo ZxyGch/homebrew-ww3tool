@@ -21,16 +21,22 @@ class Ww3tool < Formula
   depends_on "python@3.12"
 
   def install
+    # GitHub archive 解压出 <repo>-<version>/ 顶层目录；Homebrew 的 buildpath
+    # 可能是 staging 根或该子目录。显式定位项目目录，避免依赖 cwd。
+    proj = buildpath/"WW3Tool-#{version}"
+    proj = buildpath unless (proj/"setup.py").exist?
     # 保留运行所需的仓库资源；libexec 即仓库根（ww3tool 脚本据此定位资源）。
-    libexec.install Dir["meshgen", "public", "src", "params.yml",
-                        "run.py", "ww3tool", "pyproject.toml", "setup.py"]
+    libexec.install Dir[proj/"meshgen", proj/"public", proj/"src", proj/"params.yml",
+                        proj/"run.py", proj/"ww3tool", proj/"pyproject.toml", proj/"setup.py"]
     python = Formula["python@3.12"].opt_bin/"python3.12"
     system python, "-m", "venv", libexec/".venv"
     vpy = libexec/".venv/bin/python"
     system vpy, "-m", "pip", "install", "--upgrade", "pip"
-    # --no-deps：轻量依赖由 run.py 首次运行时自动补装，
-    # 避免 formula 构建期拉取全部重依赖（cartopy 等）。
-    system vpy, "-m", "pip", "install", "--no-deps", "."
+    # 显式切到 libexec 再安装（libexec 内含 setup.py/pyproject.toml），
+    # 规避任何 cwd 不确定性；--no-deps：轻量依赖由 run.py 首次运行时自动补装。
+    Dir.chdir(libexec) do
+      system vpy, "-m", "pip", "install", "--no-deps", "."
+    end
     # 移除 pip 生成的 console script，统一使用 libexec/ww3tool 入口
     # （其会通过 run.py 引导到 libexec/.venv 中的 Python）。
     FileUtils.rm_f libexec/".venv/bin/ww3tool"
