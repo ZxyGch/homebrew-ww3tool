@@ -1,21 +1,20 @@
 # WW3Tool Homebrew formula
 #
-# 本地测试（需要真实 URL 后才能通过）：
-#   brew install --HEAD ./Formula/ww3tool.rb
-# 或发布 tap 后：
-#   brew tap ZxyGch/ww3tool
-#   brew install ww3tool
+# 本地测试：
+#   brew install --HEAD ./ww3tool.rb
+# 发布 tap 后：
+#   brew tap ZxyGch/ww3tool && brew trust zxygch/ww3tool && brew install ww3tool
 #
-# 正式发布（打 tag）后替换：
-#   1. url 从 refs/heads/master 改为 refs/tags/v0.1.0
-#   2. 重新计算 sha256（curl -sL <tarball-url> | shasum -a 256）
+# 正式发布策略：每次发版在主仓库打新 tag（v0.1.0、v0.1.1...），
+# 然后把本文件的 url / sha256 更新为对应 tag tarball。
+#   curl -sL <tarball-url> | shasum -a 256
 # 注意：formula 只分发运行所需资源（meshgen/public/params.yml/src），
 # WW3 计算内核与超大目录（WW3/、WW3-6.07.1/、workSpace/）不打包。
 class Ww3tool < Formula
   desc "WW3Tool - WAVEWATCH III workflow toolkit (CLI / Shell REPL / Desktop GUI / MCP server)"
   homepage "https://github.com/ZxyGch/WW3Tool"
-  url "https://github.com/ZxyGch/WW3Tool/archive/refs/heads/master.tar.gz"
-  sha256 "498fb68a8125b3c302c8a85fa918249a4e9e2b1356b6d360a35984f7e77b5435"
+  url "https://github.com/ZxyGch/WW3Tool/archive/refs/tags/v0.1.0.tar.gz"
+  sha256 "82b659668897ea9f3186e69a8408efd581162945fa7f65ad44dc9007999fc5ae"
   version "0.1.0"
   head "https://github.com/ZxyGch/WW3Tool.git", branch: "master"
 
